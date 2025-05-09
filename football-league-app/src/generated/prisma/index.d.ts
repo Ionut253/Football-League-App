@@ -960,11 +960,11 @@ export namespace Prisma {
    */
 
   export type TeamCountOutputType = {
-    Player: number
+    players: number
   }
 
   export type TeamCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    Player?: boolean | TeamCountOutputTypeCountPlayerArgs
+    players?: boolean | TeamCountOutputTypeCountPlayersArgs
   }
 
   // Custom InputTypes
@@ -981,7 +981,7 @@ export namespace Prisma {
   /**
    * TeamCountOutputType without action
    */
-  export type TeamCountOutputTypeCountPlayerArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type TeamCountOutputTypeCountPlayersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PlayerWhereInput
   }
 
@@ -1187,7 +1187,7 @@ export namespace Prisma {
     position: string | null
     age: number | null
     nationality: string | null
-    team_id: number | null
+    team_id: number
     createdAt: Date | null
     updatedAt: Date | null
     _count: PlayerCountAggregateOutputType | null
@@ -1220,7 +1220,7 @@ export namespace Prisma {
     team_id?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    Team?: boolean | Player$TeamArgs<ExtArgs>
+    team?: boolean | TeamDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["player"]>
 
   export type PlayerSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -1232,7 +1232,7 @@ export namespace Prisma {
     team_id?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    Team?: boolean | Player$TeamArgs<ExtArgs>
+    team?: boolean | TeamDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["player"]>
 
   export type PlayerSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -1244,7 +1244,7 @@ export namespace Prisma {
     team_id?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    Team?: boolean | Player$TeamArgs<ExtArgs>
+    team?: boolean | TeamDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["player"]>
 
   export type PlayerSelectScalar = {
@@ -1260,19 +1260,19 @@ export namespace Prisma {
 
   export type PlayerOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "position" | "age" | "nationality" | "team_id" | "createdAt" | "updatedAt", ExtArgs["result"]["player"]>
   export type PlayerInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    Team?: boolean | Player$TeamArgs<ExtArgs>
+    team?: boolean | TeamDefaultArgs<ExtArgs>
   }
   export type PlayerIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    Team?: boolean | Player$TeamArgs<ExtArgs>
+    team?: boolean | TeamDefaultArgs<ExtArgs>
   }
   export type PlayerIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    Team?: boolean | Player$TeamArgs<ExtArgs>
+    team?: boolean | TeamDefaultArgs<ExtArgs>
   }
 
   export type $PlayerPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Player"
     objects: {
-      Team: Prisma.$TeamPayload<ExtArgs> | null
+      team: Prisma.$TeamPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -1280,7 +1280,7 @@ export namespace Prisma {
       position: string | null
       age: number | null
       nationality: string | null
-      team_id: number | null
+      team_id: number
       createdAt: Date | null
       updatedAt: Date | null
     }, ExtArgs["result"]["player"]>
@@ -1677,7 +1677,7 @@ export namespace Prisma {
    */
   export interface Prisma__PlayerClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    Team<T extends Player$TeamArgs<ExtArgs> = {}>(args?: Subset<T, Player$TeamArgs<ExtArgs>>): Prisma__TeamClient<$Result.GetResult<Prisma.$TeamPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    team<T extends TeamDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TeamDefaultArgs<ExtArgs>>): Prisma__TeamClient<$Result.GetResult<Prisma.$TeamPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2111,25 +2111,6 @@ export namespace Prisma {
   }
 
   /**
-   * Player.Team
-   */
-  export type Player$TeamArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Team
-     */
-    select?: TeamSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Team
-     */
-    omit?: TeamOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TeamInclude<ExtArgs> | null
-    where?: TeamWhereInput
-  }
-
-  /**
    * Player without action
    */
   export type PlayerDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2434,7 +2415,7 @@ export namespace Prisma {
     country?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    Player?: boolean | Team$PlayerArgs<ExtArgs>
+    players?: boolean | Team$playersArgs<ExtArgs>
     _count?: boolean | TeamCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["team"]>
 
@@ -2488,7 +2469,7 @@ export namespace Prisma {
 
   export type TeamOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "coach_name" | "home_stadium" | "founded_year" | "wins" | "draws" | "losses" | "goals_scored" | "goals_conceded" | "country" | "createdAt" | "updatedAt", ExtArgs["result"]["team"]>
   export type TeamInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    Player?: boolean | Team$PlayerArgs<ExtArgs>
+    players?: boolean | Team$playersArgs<ExtArgs>
     _count?: boolean | TeamCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type TeamIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2497,7 +2478,7 @@ export namespace Prisma {
   export type $TeamPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Team"
     objects: {
-      Player: Prisma.$PlayerPayload<ExtArgs>[]
+      players: Prisma.$PlayerPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -2907,7 +2888,7 @@ export namespace Prisma {
    */
   export interface Prisma__TeamClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    Player<T extends Team$PlayerArgs<ExtArgs> = {}>(args?: Subset<T, Team$PlayerArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    players<T extends Team$playersArgs<ExtArgs> = {}>(args?: Subset<T, Team$playersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlayerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3338,9 +3319,9 @@ export namespace Prisma {
   }
 
   /**
-   * Team.Player
+   * Team.players
    */
-  export type Team$PlayerArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Team$playersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Player
      */
@@ -3524,10 +3505,10 @@ export namespace Prisma {
     position?: StringNullableFilter<"Player"> | string | null
     age?: IntNullableFilter<"Player"> | number | null
     nationality?: StringNullableFilter<"Player"> | string | null
-    team_id?: IntNullableFilter<"Player"> | number | null
+    team_id?: IntFilter<"Player"> | number
     createdAt?: DateTimeNullableFilter<"Player"> | Date | string | null
     updatedAt?: DateTimeNullableFilter<"Player"> | Date | string | null
-    Team?: XOR<TeamNullableScalarRelationFilter, TeamWhereInput> | null
+    team?: XOR<TeamScalarRelationFilter, TeamWhereInput>
   }
 
   export type PlayerOrderByWithRelationInput = {
@@ -3536,10 +3517,10 @@ export namespace Prisma {
     position?: SortOrderInput | SortOrder
     age?: SortOrderInput | SortOrder
     nationality?: SortOrderInput | SortOrder
-    team_id?: SortOrderInput | SortOrder
+    team_id?: SortOrder
     createdAt?: SortOrderInput | SortOrder
     updatedAt?: SortOrderInput | SortOrder
-    Team?: TeamOrderByWithRelationInput
+    team?: TeamOrderByWithRelationInput
   }
 
   export type PlayerWhereUniqueInput = Prisma.AtLeast<{
@@ -3551,10 +3532,10 @@ export namespace Prisma {
     position?: StringNullableFilter<"Player"> | string | null
     age?: IntNullableFilter<"Player"> | number | null
     nationality?: StringNullableFilter<"Player"> | string | null
-    team_id?: IntNullableFilter<"Player"> | number | null
+    team_id?: IntFilter<"Player"> | number
     createdAt?: DateTimeNullableFilter<"Player"> | Date | string | null
     updatedAt?: DateTimeNullableFilter<"Player"> | Date | string | null
-    Team?: XOR<TeamNullableScalarRelationFilter, TeamWhereInput> | null
+    team?: XOR<TeamScalarRelationFilter, TeamWhereInput>
   }, "id">
 
   export type PlayerOrderByWithAggregationInput = {
@@ -3563,7 +3544,7 @@ export namespace Prisma {
     position?: SortOrderInput | SortOrder
     age?: SortOrderInput | SortOrder
     nationality?: SortOrderInput | SortOrder
-    team_id?: SortOrderInput | SortOrder
+    team_id?: SortOrder
     createdAt?: SortOrderInput | SortOrder
     updatedAt?: SortOrderInput | SortOrder
     _count?: PlayerCountOrderByAggregateInput
@@ -3582,7 +3563,7 @@ export namespace Prisma {
     position?: StringNullableWithAggregatesFilter<"Player"> | string | null
     age?: IntNullableWithAggregatesFilter<"Player"> | number | null
     nationality?: StringNullableWithAggregatesFilter<"Player"> | string | null
-    team_id?: IntNullableWithAggregatesFilter<"Player"> | number | null
+    team_id?: IntWithAggregatesFilter<"Player"> | number
     createdAt?: DateTimeNullableWithAggregatesFilter<"Player"> | Date | string | null
     updatedAt?: DateTimeNullableWithAggregatesFilter<"Player"> | Date | string | null
   }
@@ -3604,7 +3585,7 @@ export namespace Prisma {
     country?: StringNullableFilter<"Team"> | string | null
     createdAt?: DateTimeNullableFilter<"Team"> | Date | string | null
     updatedAt?: DateTimeNullableFilter<"Team"> | Date | string | null
-    Player?: PlayerListRelationFilter
+    players?: PlayerListRelationFilter
   }
 
   export type TeamOrderByWithRelationInput = {
@@ -3621,7 +3602,7 @@ export namespace Prisma {
     country?: SortOrderInput | SortOrder
     createdAt?: SortOrderInput | SortOrder
     updatedAt?: SortOrderInput | SortOrder
-    Player?: PlayerOrderByRelationAggregateInput
+    players?: PlayerOrderByRelationAggregateInput
   }
 
   export type TeamWhereUniqueInput = Prisma.AtLeast<{
@@ -3641,7 +3622,7 @@ export namespace Prisma {
     country?: StringNullableFilter<"Team"> | string | null
     createdAt?: DateTimeNullableFilter<"Team"> | Date | string | null
     updatedAt?: DateTimeNullableFilter<"Team"> | Date | string | null
-    Player?: PlayerListRelationFilter
+    players?: PlayerListRelationFilter
   }, "id" | "name">
 
   export type TeamOrderByWithAggregationInput = {
@@ -3691,7 +3672,7 @@ export namespace Prisma {
     nationality?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
-    Team?: TeamCreateNestedOneWithoutPlayerInput
+    team: TeamCreateNestedOneWithoutPlayersInput
   }
 
   export type PlayerUncheckedCreateInput = {
@@ -3700,7 +3681,7 @@ export namespace Prisma {
     position?: string | null
     age?: number | null
     nationality?: string | null
-    team_id?: number | null
+    team_id: number
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
   }
@@ -3712,7 +3693,7 @@ export namespace Prisma {
     nationality?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    Team?: TeamUpdateOneWithoutPlayerNestedInput
+    team?: TeamUpdateOneRequiredWithoutPlayersNestedInput
   }
 
   export type PlayerUncheckedUpdateInput = {
@@ -3721,7 +3702,7 @@ export namespace Prisma {
     position?: NullableStringFieldUpdateOperationsInput | string | null
     age?: NullableIntFieldUpdateOperationsInput | number | null
     nationality?: NullableStringFieldUpdateOperationsInput | string | null
-    team_id?: NullableIntFieldUpdateOperationsInput | number | null
+    team_id?: IntFieldUpdateOperationsInput | number
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -3732,7 +3713,7 @@ export namespace Prisma {
     position?: string | null
     age?: number | null
     nationality?: string | null
-    team_id?: number | null
+    team_id: number
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
   }
@@ -3752,7 +3733,7 @@ export namespace Prisma {
     position?: NullableStringFieldUpdateOperationsInput | string | null
     age?: NullableIntFieldUpdateOperationsInput | number | null
     nationality?: NullableStringFieldUpdateOperationsInput | string | null
-    team_id?: NullableIntFieldUpdateOperationsInput | number | null
+    team_id?: IntFieldUpdateOperationsInput | number
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -3770,7 +3751,7 @@ export namespace Prisma {
     country?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
-    Player?: PlayerCreateNestedManyWithoutTeamInput
+    players?: PlayerCreateNestedManyWithoutTeamInput
   }
 
   export type TeamUncheckedCreateInput = {
@@ -3787,7 +3768,7 @@ export namespace Prisma {
     country?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
-    Player?: PlayerUncheckedCreateNestedManyWithoutTeamInput
+    players?: PlayerUncheckedCreateNestedManyWithoutTeamInput
   }
 
   export type TeamUpdateInput = {
@@ -3803,7 +3784,7 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    Player?: PlayerUpdateManyWithoutTeamNestedInput
+    players?: PlayerUpdateManyWithoutTeamNestedInput
   }
 
   export type TeamUncheckedUpdateInput = {
@@ -3820,7 +3801,7 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    Player?: PlayerUncheckedUpdateManyWithoutTeamNestedInput
+    players?: PlayerUncheckedUpdateManyWithoutTeamNestedInput
   }
 
   export type TeamCreateManyInput = {
@@ -3933,9 +3914,9 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
-  export type TeamNullableScalarRelationFilter = {
-    is?: TeamWhereInput | null
-    isNot?: TeamWhereInput | null
+  export type TeamScalarRelationFilter = {
+    is?: TeamWhereInput
+    isNot?: TeamWhereInput
   }
 
   export type SortOrderInput = {
@@ -4148,9 +4129,9 @@ export namespace Prisma {
     goals_conceded?: SortOrder
   }
 
-  export type TeamCreateNestedOneWithoutPlayerInput = {
-    create?: XOR<TeamCreateWithoutPlayerInput, TeamUncheckedCreateWithoutPlayerInput>
-    connectOrCreate?: TeamCreateOrConnectWithoutPlayerInput
+  export type TeamCreateNestedOneWithoutPlayersInput = {
+    create?: XOR<TeamCreateWithoutPlayersInput, TeamUncheckedCreateWithoutPlayersInput>
+    connectOrCreate?: TeamCreateOrConnectWithoutPlayersInput
     connect?: TeamWhereUniqueInput
   }
 
@@ -4174,14 +4155,12 @@ export namespace Prisma {
     set?: Date | string | null
   }
 
-  export type TeamUpdateOneWithoutPlayerNestedInput = {
-    create?: XOR<TeamCreateWithoutPlayerInput, TeamUncheckedCreateWithoutPlayerInput>
-    connectOrCreate?: TeamCreateOrConnectWithoutPlayerInput
-    upsert?: TeamUpsertWithoutPlayerInput
-    disconnect?: TeamWhereInput | boolean
-    delete?: TeamWhereInput | boolean
+  export type TeamUpdateOneRequiredWithoutPlayersNestedInput = {
+    create?: XOR<TeamCreateWithoutPlayersInput, TeamUncheckedCreateWithoutPlayersInput>
+    connectOrCreate?: TeamCreateOrConnectWithoutPlayersInput
+    upsert?: TeamUpsertWithoutPlayersInput
     connect?: TeamWhereUniqueInput
-    update?: XOR<XOR<TeamUpdateToOneWithWhereWithoutPlayerInput, TeamUpdateWithoutPlayerInput>, TeamUncheckedUpdateWithoutPlayerInput>
+    update?: XOR<XOR<TeamUpdateToOneWithWhereWithoutPlayersInput, TeamUpdateWithoutPlayersInput>, TeamUncheckedUpdateWithoutPlayersInput>
   }
 
   export type IntFieldUpdateOperationsInput = {
@@ -4397,7 +4376,7 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
-  export type TeamCreateWithoutPlayerInput = {
+  export type TeamCreateWithoutPlayersInput = {
     name: string
     coach_name?: string | null
     home_stadium?: string | null
@@ -4412,7 +4391,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
   }
 
-  export type TeamUncheckedCreateWithoutPlayerInput = {
+  export type TeamUncheckedCreateWithoutPlayersInput = {
     id?: number
     name: string
     coach_name?: string | null
@@ -4428,23 +4407,23 @@ export namespace Prisma {
     updatedAt?: Date | string | null
   }
 
-  export type TeamCreateOrConnectWithoutPlayerInput = {
+  export type TeamCreateOrConnectWithoutPlayersInput = {
     where: TeamWhereUniqueInput
-    create: XOR<TeamCreateWithoutPlayerInput, TeamUncheckedCreateWithoutPlayerInput>
+    create: XOR<TeamCreateWithoutPlayersInput, TeamUncheckedCreateWithoutPlayersInput>
   }
 
-  export type TeamUpsertWithoutPlayerInput = {
-    update: XOR<TeamUpdateWithoutPlayerInput, TeamUncheckedUpdateWithoutPlayerInput>
-    create: XOR<TeamCreateWithoutPlayerInput, TeamUncheckedCreateWithoutPlayerInput>
+  export type TeamUpsertWithoutPlayersInput = {
+    update: XOR<TeamUpdateWithoutPlayersInput, TeamUncheckedUpdateWithoutPlayersInput>
+    create: XOR<TeamCreateWithoutPlayersInput, TeamUncheckedCreateWithoutPlayersInput>
     where?: TeamWhereInput
   }
 
-  export type TeamUpdateToOneWithWhereWithoutPlayerInput = {
+  export type TeamUpdateToOneWithWhereWithoutPlayersInput = {
     where?: TeamWhereInput
-    data: XOR<TeamUpdateWithoutPlayerInput, TeamUncheckedUpdateWithoutPlayerInput>
+    data: XOR<TeamUpdateWithoutPlayersInput, TeamUncheckedUpdateWithoutPlayersInput>
   }
 
-  export type TeamUpdateWithoutPlayerInput = {
+  export type TeamUpdateWithoutPlayersInput = {
     name?: StringFieldUpdateOperationsInput | string
     coach_name?: NullableStringFieldUpdateOperationsInput | string | null
     home_stadium?: NullableStringFieldUpdateOperationsInput | string | null
@@ -4459,7 +4438,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
-  export type TeamUncheckedUpdateWithoutPlayerInput = {
+  export type TeamUncheckedUpdateWithoutPlayersInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     coach_name?: NullableStringFieldUpdateOperationsInput | string | null
@@ -4529,7 +4508,7 @@ export namespace Prisma {
     position?: StringNullableFilter<"Player"> | string | null
     age?: IntNullableFilter<"Player"> | number | null
     nationality?: StringNullableFilter<"Player"> | string | null
-    team_id?: IntNullableFilter<"Player"> | number | null
+    team_id?: IntFilter<"Player"> | number
     createdAt?: DateTimeNullableFilter<"Player"> | Date | string | null
     updatedAt?: DateTimeNullableFilter<"Player"> | Date | string | null
   }
