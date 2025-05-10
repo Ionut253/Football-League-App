@@ -1,12 +1,24 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '../../../generated/prisma'
+import { PrismaClient } from '../../../generated/prisma';
 
 const prisma = new PrismaClient();
 
-export async function GET() {
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const name = searchParams.get('name');
+
   try {
     const teams = await prisma.team.findMany({
-      include: { players: true }, // optional: include players if relation exists
+      where: name
+        ? {
+            name: {
+              contains: name,
+              mode: 'insensitive',
+            },
+          }
+        : undefined,
+      include: { players: true },
+      orderBy: { name: 'asc' },
     });
 
     return NextResponse.json(teams);
