@@ -17,7 +17,7 @@ export default function PremierLeagueTeams() {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  const teamsPerPage = 10;
+  const teamsPerPage = 5;
 
   // Fetch and filter teams
   const fetchTeams = async (isSearch = false) => {
@@ -51,7 +51,10 @@ export default function PremierLeagueTeams() {
   }
 };
 
-
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1); // Reset to page 1 whenever search input changes
+  };
 
   // Handle search/sort debounce
   useEffect(() => {
@@ -76,6 +79,7 @@ export default function PremierLeagueTeams() {
     (currentPage - 1) * teamsPerPage,
     currentPage * teamsPerPage
   );
+  
   const totalPages = Math.ceil(filteredTeams.length / teamsPerPage);
 
   const handleCheckboxChange = (teamName: string) => {
@@ -123,7 +127,7 @@ export default function PremierLeagueTeams() {
             ref={searchInputRef}
             autoFocus
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleSearchChange}
             className="p-2 rounded bg-gray-800 text-white border border-gray-600 w-64"
             placeholder="Search teams..."
           />
@@ -147,12 +151,6 @@ export default function PremierLeagueTeams() {
             disabled={!selectedTeams.length}
           >
             Remove Selected
-          </button>
-          <button
-            onClick={() => router.push("/statistics")}
-            className="bg-purple-600 px-4 py-2 rounded cursor-pointer"
-          >
-            View Stats
           </button>
         </div>
 
@@ -271,14 +269,13 @@ const PaginationControls = ({
   total: number;
   onPageChange: (page: number) => void;
 }) => {
-  if (total <= 1) return null;
   return (
     <div className="flex justify-center mt-6 gap-4">
       <button
         onClick={() => onPageChange(current - 1)}
         disabled={current <= 1}
         className={`px-4 py-2 rounded ${
-          current <= 1 ? "bg-gray-500 cursor-not-allowed" : "bg-blue-500"
+          current <= 1 ? "bg-gray-500 cursor-not-allowed" : "bg-blue-500 cursor-pointer"
         }`}
       >
         Prev
@@ -290,7 +287,7 @@ const PaginationControls = ({
         onClick={() => onPageChange(current + 1)}
         disabled={current >= total}
         className={`px-4 py-2 rounded ${
-          current >= total ? "bg-gray-500 cursor-not-allowed" : "bg-blue-500"
+          current >= total ? "bg-gray-500 cursor-not-allowed" : "bg-blue-500 cursor-pointer"
         }`}
       >
         Next
