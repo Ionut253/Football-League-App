@@ -6,8 +6,8 @@ const prisma = new PrismaClient();
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const name = searchParams.get('name');
-  const sortBy = searchParams.get('sortBy') || 'points';  // Display-level sort criterion
-  const order = searchParams.get('order') || 'desc';       // Display-level sort order
+  const sortBy = searchParams.get('sortBy') || 'points';  
+  const order = searchParams.get('order') || 'desc';       
 
   try {
     // Always fetch all teams (to calculate global ranking)
@@ -21,7 +21,6 @@ export async function GET(req: Request) {
       points: team.wins * 3 + team.draws * 1,
     }));
 
-    // GLOBAL RANKING: Sort by primary criteria for ranking:
     const globallySortedTeams = [...teamsWithPoints].sort((a, b) => {
       if (a.points !== b.points) return b.points - a.points;
       if (a.wins !== b.wins) return b.wins - a.wins;
@@ -44,8 +43,6 @@ export async function GET(req: Request) {
       );
     }
 
-    // OPTIONAL: Apply display-level sorting based on query parameters
-    // (This sorts the filtered list without modifying the already-calculated global position)
     const sortedTeams = resultTeams.sort((a, b) => {
       if (sortBy === 'points') {
         return order === 'asc' ? a.points - b.points : b.points - a.points;

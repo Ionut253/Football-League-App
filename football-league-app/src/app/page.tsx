@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { TeamType } from "@/app/types/team";
 
-export default function PremierLeagueTeams() {
+export default function HomePage() {
   const [teams, setTeams] = useState<TeamType[]>([]);
   const [filteredTeams, setFilteredTeams] = useState<TeamType[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -158,7 +158,7 @@ export default function PremierLeagueTeams() {
           teams={paginatedTeams}
           selected={selectedTeams}
           onSelect={handleCheckboxChange}
-          onTeamClick={(name) => router.push(`/${name}`)}
+          onTeamClick={(id) => router.push(`/${id}`)}
         />
 
         <PaginationControls
@@ -183,7 +183,7 @@ const StatusPage = ({
   <div className="bg-black text-white min-h-screen flex items-center justify-center">
     <div className="text-center">
       <h1 className={`text-3xl font-bold ${isError ? "text-red-500" : ""}`}>
-        {isError ? "Error" : "Notice"}
+        {isError ? "Error" : "Please wait..."}
       </h1>
       <p className="mt-2">{message}</p>
       {isError && onRetry && (
@@ -204,7 +204,7 @@ const TeamTable = ({
   teams: TeamType[];
   selected: string[];
   onSelect: (teamName: string) => void;
-  onTeamClick: (teamName: string) => void;
+  onTeamClick: (teamId: number) => void;
 }) => (
   <div className="overflow-x-auto">
     <table className="min-w-full bg-[#1d1d1d] text-white table-fixed rounded-lg overflow-hidden">
@@ -237,7 +237,7 @@ const TeamTable = ({
               className={`${highlight} border-b border-gray-700 hover:bg-gray-600`}
             >
               <td className="py-2 px-4">{team.position}</td>
-              <td className="py-2 px-4 cursor-pointer" onClick={() => onTeamClick(team.name)}>
+              <td className="py-2 px-4 cursor-pointer" onClick={() => onTeamClick(team.id)}>
                 {team.name}
               </td>
               <td className="py-2 px-4 text-center">{team.gamesPlayed}</td>
