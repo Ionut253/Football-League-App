@@ -11,7 +11,13 @@ export default async function TeamPage({ params }: { params: { id: string } }) {
   const teamId = parseInt(id);
   
   if (isNaN(teamId)) {
-    return <div className="p-4">Invalid team ID.</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <div className="bg-[#1d1d1d] p-8 rounded-lg shadow-lg">
+          <h1 className="text-2xl font-semibold text-red-500">Invalid team ID</h1>
+        </div>
+      </div>
+    );
   }
   
   try {
@@ -22,59 +28,138 @@ export default async function TeamPage({ params }: { params: { id: string } }) {
     });
     
     if (!team) {
-      return <div className="p-4">Team not found.</div>;
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-black">
+          <div className="bg-[#1d1d1d] p-8 rounded-lg shadow-lg">
+            <h1 className="text-2xl font-semibold text-white">Team not found</h1>
+          </div>
+        </div>
+      );
     }
     
     return (
-      <div className="p-6 max-w-4xl mx-auto space-y-6">
-        <h1 className="text-3xl font-bold">{team.name}</h1>
-        <p className="text-gray-700">Coach: {team.coach_name}</p>
-        <p className="text-gray-700">Stadium: {team.home_stadium}</p>
-        <p className="text-gray-700">Founded: {team.founded_year}</p>
-        <p className="text-gray-700">Country: {team.country}</p>
-        
-        <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-2xl font-semibold mb-4">Team Stats</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-gray-800">
-            <p><strong>Wins:</strong> {team.wins}</p>
-            <p><strong>Draws:</strong> {team.draws}</p>
-            <p><strong>Losses:</strong> {team.losses}</p>
-            <p><strong>Goals Scored:</strong> {team.goals_scored}</p>
-            <p><strong>Goals Conceded:</strong> {team.goals_conceded}</p>
+      <div className="min-h-screen bg-black py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Team Header */}
+          <div className="bg-[#1d1d1d] rounded-lg shadow-lg p-8 mb-8">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+              <div>
+                <h1 className="text-4xl font-bold text-white mb-2">{team.name}</h1>
+                <div className="flex flex-wrap gap-4 text-gray-400">
+                  <p className="flex items-center">
+                    <span className="font-medium text-gray-300">Coach:</span>
+                    <span className="ml-2">{team.coach_name}</span>
+                  </p>
+                  <p className="flex items-center">
+                    <span className="font-medium text-gray-300">Stadium:</span>
+                    <span className="ml-2">{team.home_stadium}</span>
+                  </p>
+                  <p className="flex items-center">
+                    <span className="font-medium text-gray-300">Founded:</span>
+                    <span className="ml-2">{team.founded_year}</span>
+                  </p>
+                  <p className="flex items-center">
+                    <span className="font-medium text-gray-300">Country:</span>
+                    <span className="ml-2">{team.country}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <h2 className="text-2xl font-semibold mt-6">Players</h2>
-        <div className="overflow-x-auto">
-          <table className="min-w-full table-auto border-collapse border border-gray-300">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="border border-gray-300 px-4 py-2 text-left">Name</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Position</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Age</th>
-                <th className="border border-gray-300 px-4 py-2 text-left">Nationality</th>
-              </tr>
-            </thead>
-            <tbody>
-              {team.players.map((player) => (
-                <tr key={player.id} className="hover:bg-gray-50">
-                  <td className="border border-gray-300 px-4 py-2">{player.name}</td>
-                  <td className="border border-gray-300 px-4 py-2">{player.position ?? "N/A"}</td>
-                  <td className="border border-gray-300 px-4 py-2">{player.age ?? "Unknown"}</td>
-                  <td className="border border-gray-300 px-4 py-2">{player.nationality ?? "Unknown"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {/* Team Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <div className="bg-[#1d1d1d] rounded-lg shadow-lg p-8">
+              <h2 className="text-2xl font-semibold text-white mb-6">Team Statistics</h2>
+              <div className="grid grid-cols-2 gap-6">
+                <div className="bg-gray-800 rounded-lg p-4">
+                  <p className="text-sm text-blue-400 font-medium">Wins</p>
+                  <p className="text-3xl font-bold text-white">{team.wins}</p>
+                </div>
+                <div className="bg-gray-800 rounded-lg p-4">
+                  <p className="text-sm text-green-400 font-medium">Draws</p>
+                  <p className="text-3xl font-bold text-white">{team.draws}</p>
+                </div>
+                <div className="bg-gray-800 rounded-lg p-4">
+                  <p className="text-sm text-red-400 font-medium">Losses</p>
+                  <p className="text-3xl font-bold text-white">{team.losses}</p>
+                </div>
+                <div className="bg-gray-800 rounded-lg p-4">
+                  <p className="text-sm text-purple-400 font-medium">Goals Scored</p>
+                  <p className="text-3xl font-bold text-white">{team.goals_scored}</p>
+                </div>
+                <div className="bg-gray-800 rounded-lg p-4">
+                  <p className="text-sm text-orange-400 font-medium">Goals Conceded</p>
+                  <p className="text-3xl font-bold text-white">{team.goals_conceded}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Squad Overview */}
+            <div className="bg-[#1d1d1d] rounded-lg shadow-lg p-8">
+              <h2 className="text-2xl font-semibold text-white mb-6">Squad Overview</h2>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Total Players</span>
+                  <span className="text-2xl font-bold text-white">{team.players.length}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Average Age</span>
+                  <span className="text-2xl font-bold text-white">
+                    {Math.round(team.players.reduce((acc, player) => acc + (player.age || 0), 0) / team.players.length)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Players Table */}
+          <div className="bg-[#1d1d1d] rounded-lg shadow-lg overflow-hidden">
+            <div className="p-8">
+              <h2 className="text-2xl font-semibold text-white mb-6">Squad Players</h2>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="bg-gray-700">
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">Name</th>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">Position</th>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">Age</th>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">Nationality</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-700">
+                  {team.players.map((player) => (
+                    <tr key={player.id} className="hover:bg-gray-700 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-white">{player.name}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-400">{player.position ?? "N/A"}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-400">{player.age ?? "Unknown"}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-400">{player.nationality ?? "Unknown"}</div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     );
   } catch (error) {
     console.error("Error fetching team:", error);
     return (
-      <div className="p-4 text-red-500">
-        <h1>Error loading team</h1>
-        <p>{String(error)}</p>
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <div className="bg-[#1d1d1d] p-8 rounded-lg shadow-lg">
+          <h1 className="text-2xl font-semibold text-red-500 mb-2">Error loading team</h1>
+          <p className="text-gray-400">{String(error)}</p>
+        </div>
       </div>
     );
   }
