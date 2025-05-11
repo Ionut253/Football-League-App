@@ -15,13 +15,37 @@ export async function GET(req: Request) {
       include: { players: true },
     });
 
-    // Calculate points for each team
-    const teamsWithPoints = teams.map((team: any) => ({
-      ...team,
-      points: team.wins * 3 + team.draws * 1,
-    }));
+    // Calculate metadata on the full list
+    const winsArr = teams.map(team => team.wins ?? 0);
+    const maxWins = Math.max(...winsArr);
+    const minWins = Math.min(...winsArr);
+    const avgWins = Math.round(winsArr.reduce((a, b) => a + b, 0) / winsArr.length);
 
-    const globallySortedTeams = [...teamsWithPoints].sort((a, b) => {
+    // Calculate metadata and points safely
+    const teamsWithMeta = teams.map(team => {
+      const wins = team.wins ?? 0;
+      const draws = team.draws ?? 0;
+      const losses = team.losses ?? 0;
+      const goals_scored = team.goals_scored ?? 0;
+      const goals_conceded = team.goals_conceded ?? 0;
+      const points = wins * 3 + draws * 1;
+      return {
+        ...team,
+        wins,
+        draws,
+        losses,
+        goals_scored,
+        goals_conceded,
+        points,
+        metadata: {
+          isMostWins: wins === maxWins,
+          isLeastWins: wins === minWins,
+          isAvgWins: wins === avgWins,
+        }
+      };
+    });
+
+    const globallySortedTeams = [...teamsWithMeta].sort((a, b) => {
       if (a.points !== b.points) return b.points - a.points;
       if (a.wins !== b.wins) return b.wins - a.wins;
       if (a.goals_scored !== b.goals_scored) return b.goals_scored - a.goals_scored;
@@ -39,7 +63,8 @@ export async function GET(req: Request) {
     if (name) {
       const lowerName = name.toLowerCase();
       resultTeams = globalRankedTeams.filter(team =>
-        team.name.toLowerCase().includes(lowerName)
+        team.name.toLowerCase().includes(lowerName) ||
+        (team.abbreviation && team.abbreviation.toLowerCase().includes(lowerName))
       );
     }
 
@@ -76,6 +101,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { 
       name, 
+      abbreviation,
       coach_name, 
       home_stadium, 
       founded_year, 
@@ -86,6 +112,10 @@ export async function POST(req: Request) {
       goals_scored = 0,
       goals_conceded = 0
     } = body;
+
+    if (abbreviation && abbreviation.length > 4) {
+      return NextResponse.json({ message: "Abbreviation must be at most 4 characters long." }, { status: 400 });
+    }
 
     // Validate required fields
     if (!name) {
@@ -111,6 +141,7 @@ export async function POST(req: Request) {
     const newTeam = await prisma.team.create({
       data: {
         name,
+        abbreviation,
         coach_name,
         home_stadium,
         founded_year,

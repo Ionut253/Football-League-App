@@ -23,6 +23,7 @@ model Player {
 model Team {
   id             Int       @id @default(autoincrement())
   name           String    @unique @db.VarChar(100)
+  abbreviation   String?   @db.VarChar(10)
   coach_name     String?   @db.VarChar(100)
   home_stadium   String?   @db.VarChar(100)
   founded_year   Int?

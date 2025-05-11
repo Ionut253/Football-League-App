@@ -174,17 +174,22 @@ export async function PATCH(
 
   try {
     const body = await req.json();
-    const data: any = {};
-    if (body.name !== undefined) data.name = body.name;
-    if (body.coach_name !== undefined) data.coach_name = body.coach_name;
-    if (body.home_stadium !== undefined) data.home_stadium = body.home_stadium;
-    if (body.founded_year !== undefined) data.founded_year = Number(body.founded_year);
-    if (body.country !== undefined) data.country = body.country;
-    if (body.wins !== undefined) data.wins = Number(body.wins);
-    if (body.draws !== undefined) data.draws = Number(body.draws);
-    if (body.losses !== undefined) data.losses = Number(body.losses);
-    if (body.goals_scored !== undefined) data.goals_scored = Number(body.goals_scored);
-    if (body.goals_conceded !== undefined) data.goals_conceded = Number(body.goals_conceded);
+    const { name, abbreviation, coach_name, home_stadium, founded_year, country, wins, draws, losses, goals_scored, goals_conceded } = body;
+
+    if (abbreviation && abbreviation.length > 4) {
+      return new Response(JSON.stringify({ message: "Abbreviation must be at most 4 characters long." }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // Validate required fields
+    if (!name) {
+      return new Response(JSON.stringify({ message: "Team name is required" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
     // Check if team exists
     const existingTeam = await prisma.team.findUnique({
@@ -202,7 +207,19 @@ export async function PATCH(
     // Update team with only the provided fields
     const updatedTeam = await prisma.team.update({
       where: { id: teamId },
-      data,
+      data: {
+        name,
+        abbreviation,
+        coach_name,
+        home_stadium,
+        founded_year,
+        country,
+        wins,
+        draws,
+        losses,
+        goals_scored,
+        goals_conceded,
+      },
       include: { players: true },
     });
 

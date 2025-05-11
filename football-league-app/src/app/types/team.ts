@@ -1,6 +1,7 @@
 export type TeamType = {
     id: number;
     name: string;
+    abbreviation: string;
     coach_name: string;
     home_stadium: string;
     founded_year: string;

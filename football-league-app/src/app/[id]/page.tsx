@@ -24,6 +24,21 @@ export default function TeamPage({ params }: { params: Promise<{ id: string }> }
   const [savingInfo, setSavingInfo] = useState(false);
   const [savingStats, setSavingStats] = useState(false);
 
+  // 1. Add state:
+  const [editingPlayerId, setEditingPlayerId] = useState<number | null>(null);
+  const [playerEditData, setPlayerEditData] = useState<Partial<PlayerType>>({});
+  const [savingPlayer, setSavingPlayer] = useState(false);
+
+  // Add state for add player modal and new player data
+  const [showAddPlayerModal, setShowAddPlayerModal] = useState(false);
+  const [newPlayer, setNewPlayer] = useState({ name: '', position: '', age: '', nationality: '' });
+  const [addPlayerError, setAddPlayerError] = useState<string | null>(null);
+  const [addingPlayer, setAddingPlayer] = useState(false);
+
+  // 1. Add state for per-field errors:
+  const [addPlayerFieldErrors, setAddPlayerFieldErrors] = useState<{ [key: string]: string }>({});
+  const [editPlayerFieldErrors, setEditPlayerFieldErrors] = useState<{ [key: string]: string }>({});
+
   useEffect(() => {
     if (isNaN(teamId)) {
       setError("Invalid team ID");
@@ -40,6 +55,7 @@ export default function TeamPage({ params }: { params: Promise<{ id: string }> }
         setTeam(data as TeamWithPlayers);
         setInfoData({
           name: data.name,
+          abbreviation: data.abbreviation || "",
           coach_name: data.coach_name,
           home_stadium: data.home_stadium,
           founded_year: data.founded_year,
@@ -67,6 +83,10 @@ export default function TeamPage({ params }: { params: Promise<{ id: string }> }
     setInfoData({ ...infoData, [name]: value });
   };
   const handleInfoSave = async () => {
+    if (infoData.abbreviation && infoData.abbreviation.length > 3) {
+      setError("Abbreviation must be at most 3 characters long.");
+      return;
+    }
     setSavingInfo(true);
     setError(null);
     try {
@@ -84,6 +104,7 @@ export default function TeamPage({ params }: { params: Promise<{ id: string }> }
       setEditInfoMode(false);
       setInfoData({
         name: updated.name,
+        abbreviation: updated.abbreviation || "",
         coach_name: updated.coach_name,
         home_stadium: updated.home_stadium,
         founded_year: updated.founded_year,
@@ -134,6 +155,140 @@ export default function TeamPage({ params }: { params: Promise<{ id: string }> }
     }
   };
 
+  // Add handlers:
+  const handlePlayerEdit = (player: PlayerType) => {
+    setEditingPlayerId(player.id);
+    setPlayerEditData({ ...player });
+  };
+  const handlePlayerEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPlayerEditData({ ...playerEditData, [e.target.name]: e.target.value });
+  };
+  const handlePlayerEditSave = async () => {
+    if (!editingPlayerId) return;
+    setSavingPlayer(true);
+    setError(null);
+    try {
+      if (!playerEditData.name?.trim() || !playerEditData.position?.trim() || !playerEditData.age?.toString().trim() || !playerEditData.nationality?.trim()) {
+        setEditPlayerFieldErrors({
+          name: !playerEditData.name?.trim() ? 'Name is required' : '',
+          position: !playerEditData.position?.trim() ? 'Position is required' : '',
+          age: !playerEditData.age?.toString().trim() ? 'Age is required' : '',
+          nationality: !playerEditData.nationality?.trim() ? 'Nationality is required' : '',
+        });
+        setSavingPlayer(false);
+        return;
+      }
+      if (!/^\d+$/.test(playerEditData.age?.toString() || '') || Number(playerEditData.age) <= 0) {
+        setEditPlayerFieldErrors({
+          age: 'Age must be a positive number',
+        });
+        setSavingPlayer(false);
+        return;
+      }
+      const res = await fetch(`/api/players/${editingPlayerId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(playerEditData),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || "Failed to update player");
+      }
+      const updated = await res.json();
+      setTeam(prev => prev ? {
+        ...prev,
+        players: prev.players.map(p => p.id === updated.id ? updated : p)
+      } : prev);
+      setEditingPlayerId(null);
+      setPlayerEditData({});
+    } catch (err: any) {
+      setError(err.message || "Failed to update player");
+    } finally {
+      setSavingPlayer(false);
+    }
+  };
+  const handlePlayerEditCancel = () => {
+    setEditingPlayerId(null);
+    setPlayerEditData({});
+  };
+
+  // Add handler for opening modal
+  const handleOpenAddPlayer = () => {
+    setShowAddPlayerModal(true);
+    setNewPlayer({ name: '', position: '', age: '', nationality: '' });
+    setAddPlayerError(null);
+  };
+  const handleCloseAddPlayer = () => {
+    setShowAddPlayerModal(false);
+    setNewPlayer({ name: '', position: '', age: '', nationality: '' });
+    setAddPlayerError(null);
+  };
+
+  // Add handler for input change
+  const handleNewPlayerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewPlayer({ ...newPlayer, [e.target.name]: e.target.value });
+  };
+
+  // Add handler for submit
+  const handleAddPlayer = async () => {
+    setAddingPlayer(true);
+    setError(null);
+    try {
+      if (!newPlayer.name.trim() || !newPlayer.position.trim() || !newPlayer.age.trim() || !newPlayer.nationality.trim()) {
+        setAddPlayerFieldErrors({
+          name: !newPlayer.name.trim() ? 'Name is required' : '',
+          position: !newPlayer.position.trim() ? 'Position is required' : '',
+          age: !newPlayer.age.trim() ? 'Age is required' : '',
+          nationality: !newPlayer.nationality.trim() ? 'Nationality is required' : '',
+        });
+        setAddingPlayer(false);
+        return;
+      }
+      if (!/^\d+$/.test(newPlayer.age) || Number(newPlayer.age) <= 0) {
+        setAddPlayerFieldErrors({
+          age: 'Age must be a positive number',
+        });
+        setAddingPlayer(false);
+        return;
+      }
+      const res = await fetch('/api/players', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...newPlayer,
+          age: newPlayer.age ? Number(newPlayer.age) : null,
+          team_id: teamId,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || 'Failed to add player');
+      }
+      const created = await res.json();
+      setTeam(prev => prev ? { ...prev, players: [...prev.players, created] } : prev);
+      handleCloseAddPlayer();
+    } catch (err: any) {
+      setError(err.message || 'Failed to add player');
+    } finally {
+      setAddingPlayer(false);
+    }
+  };
+
+  // Add handler for delete
+  const handleDeletePlayer = async (playerId: number) => {
+    if (!window.confirm('Are you sure you want to delete this player?')) return;
+    try {
+      const res = await fetch(`/api/players/${playerId}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || 'Failed to delete player');
+      }
+      setTeam(prev => prev ? { ...prev, players: prev.players.filter(p => p.id !== playerId) } : prev);
+    } catch (err: any) {
+      setError(err.message || 'Failed to delete player');
+    }
+  };
+
   if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center bg-black">
@@ -170,9 +325,21 @@ export default function TeamPage({ params }: { params: Promise<{ id: string }> }
                 ) : (
                   <h1 className="text-4xl font-bold text-white mb-2">{team.name}</h1>
                 )}
+                {editInfoMode ? (
+                  <input
+                    name="abbreviation"
+                    value={infoData.abbreviation}
+                    onChange={handleInfoChange}
+                    className="ml-2 bg-gray-800 border border-gray-600 rounded p-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors w-32 cursor-pointer"
+                    placeholder="Abbreviation"
+                    maxLength={4}
+                  />
+                ) : (
+                  team.abbreviation && <span className="ml-2 text-lg text-blue-400 font-mono">({team.abbreviation})</span>
+                )}
                 <button
                   onClick={() => setEditInfoMode((v) => !v)}
-                  className="ml-2 p-2 rounded hover:bg-gray-700"
+                  className="ml-2 p-2 rounded hover:bg-gray-700 cursor-pointer"
                   title="Edit team info"
                 >
                   <svg
@@ -249,7 +416,7 @@ export default function TeamPage({ params }: { params: Promise<{ id: string }> }
                 <div className="flex gap-4 mt-4">
                   <button
                     onClick={handleInfoSave}
-                    className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700 disabled:opacity-50"
+                    className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 cursor-pointer"
                     disabled={savingInfo}
                   >
                     {savingInfo ? "Saving..." : "Save"}
@@ -259,13 +426,14 @@ export default function TeamPage({ params }: { params: Promise<{ id: string }> }
                       setEditInfoMode(false);
                       setInfoData({
                         name: team.name,
+                        abbreviation: team.abbreviation || "",
                         coach_name: team.coach_name,
                         home_stadium: team.home_stadium,
                         founded_year: team.founded_year,
                         country: team.country,
                       });
                     }}
-                    className="px-4 py-2 rounded bg-gray-600 text-white hover:bg-gray-700"
+                    className="px-4 py-2 rounded bg-gray-600 text-white hover:bg-gray-700 cursor-pointer"
                     disabled={savingInfo}
                   >
                     Cancel
@@ -283,7 +451,7 @@ export default function TeamPage({ params }: { params: Promise<{ id: string }> }
               <h2 className="text-2xl font-semibold text-white">Team Statistics</h2>
               <button
                 onClick={() => setEditStatsMode((v) => !v)}
-                className="ml-2 p-2 rounded hover:bg-gray-700"
+                className="ml-2 p-2 rounded hover:bg-gray-700 cursor-pointer"
                 title="Edit team stats"
               >
                 <svg
@@ -337,7 +505,7 @@ export default function TeamPage({ params }: { params: Promise<{ id: string }> }
               <div className="flex gap-4 mt-4">
                 <button
                   onClick={handleStatsSave}
-                  className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700 disabled:opacity-50"
+                  className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 cursor-pointer"
                   disabled={savingStats}
                 >
                   {savingStats ? "Saving..." : "Save"}
@@ -353,7 +521,7 @@ export default function TeamPage({ params }: { params: Promise<{ id: string }> }
                       goals_conceded: team.goals_conceded,
                     });
                   }}
-                  className="px-4 py-2 rounded bg-gray-600 text-white hover:bg-gray-700"
+                  className="px-4 py-2 rounded bg-gray-600 text-white hover:bg-gray-700 cursor-pointer"
                   disabled={savingStats}
                 >
                   Cancel
@@ -409,26 +577,177 @@ export default function TeamPage({ params }: { params: Promise<{ id: string }> }
               </thead>
               <tbody className="divide-y divide-gray-700">
                 {team.players.map((player: PlayerType) => (
-                  <tr key={player.id} className="hover:bg-gray-700 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-white">{player.name}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-400">{player.position ?? "N/A"}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-400">{player.age ?? "Unknown"}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-400">{player.nationality ?? "Unknown"}</div>
-                    </td>
-                  </tr>
+                  editingPlayerId === player.id ? (
+                    <tr key={player.id} className="hover:bg-gray-700 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-white">
+                          <input
+                            name="name"
+                            value={playerEditData.name ?? ""}
+                            onChange={handlePlayerEditChange}
+                            className="text-white bg-gray-800 border border-gray-600 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors w-full max-w-md"
+                          />
+                          {editPlayerFieldErrors.name && <p className="text-red-500 text-xs mt-1">{editPlayerFieldErrors.name}</p>}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-400">
+                          <input
+                            name="position"
+                            value={playerEditData.position ?? ""}
+                            onChange={handlePlayerEditChange}
+                            className="text-white bg-gray-800 border border-gray-600 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors w-full max-w-md"
+                          />
+                          {editPlayerFieldErrors.position && <p className="text-red-500 text-xs mt-1">{editPlayerFieldErrors.position}</p>}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-400">
+                          <input
+                            name="age"
+                            value={playerEditData.age?.toString() ?? ""}
+                            onChange={handlePlayerEditChange}
+                            className="text-white bg-gray-800 border border-gray-600 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors w-full max-w-md"
+                          />
+                          {editPlayerFieldErrors.age && <p className="text-red-500 text-xs mt-1">{editPlayerFieldErrors.age}</p>}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-400">
+                          <input
+                            name="nationality"
+                            value={playerEditData.nationality ?? ""}
+                            onChange={handlePlayerEditChange}
+                            className="text-white bg-gray-800 border border-gray-600 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors w-full max-w-md"
+                          />
+                          {editPlayerFieldErrors.nationality && <p className="text-red-500 text-xs mt-1">{editPlayerFieldErrors.nationality}</p>}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-400">
+                          <button
+                            onClick={handlePlayerEditSave}
+                            disabled={savingPlayer}
+                            className="text-white bg-gray-800 border border-gray-600 rounded p-2 hover:bg-gray-700 transition-colors cursor-pointer"
+                          >
+                            Save
+                          </button>
+                          <button
+                            onClick={handlePlayerEditCancel}
+                            disabled={savingPlayer}
+                            className="text-white bg-gray-800 border border-gray-600 rounded p-2 hover:bg-gray-700 transition-colors ml-2 cursor-pointer"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    <tr key={player.id} className="hover:bg-gray-700 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-white">{player.name}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-400">{player.position ?? "N/A"}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-400">{player.age ?? "Unknown"}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-400">{player.nationality ?? "Unknown"}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-400">
+                          <button
+                            onClick={() => handlePlayerEdit(player)}
+                            className="text-white bg-gray-800 border border-gray-600 rounded p-2 hover:bg-gray-700 transition-colors cursor-pointer"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5 text-gray-400 hover:text-blue-400"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-2.828 0L9 13zm0 0L4 19l5-1 1-5z"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-400">
+                          <button
+                            onClick={() => handleDeletePlayer(player.id)}
+                            className="ml-2 p-2 rounded hover:bg-red-700 cursor-pointer"
+                            title="Delete player"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5 text-red-500 hover:text-white"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
                 ))}
               </tbody>
             </table>
           </div>
         </div>
+
+        {/* Add Player Button */}
+        <div className="mt-8">
+          <button
+            onClick={handleOpenAddPlayer}
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow cursor-pointer"
+          >
+            Add Player
+          </button>
+        </div>
       </div>
+
+      {/* Add Player Modal */}
+      {showAddPlayerModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+          <div className="bg-[#1d1d1d] p-6 rounded-lg shadow-lg w-full max-w-md">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold text-white">Add Player</h2>
+              <button onClick={handleCloseAddPlayer} className="text-gray-400 hover:text-white cursor-pointer">✕</button>
+            </div>
+            <div className="space-y-4">
+              <input name="name" value={newPlayer.name} onChange={handleNewPlayerChange} placeholder="Name" className="w-full p-2 rounded bg-gray-800 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+              {addPlayerFieldErrors.name && <p className="text-red-500 text-xs mt-1">{addPlayerFieldErrors.name}</p>}
+              <input name="position" value={newPlayer.position} onChange={handleNewPlayerChange} placeholder="Position" className="w-full p-2 rounded bg-gray-800 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+              {addPlayerFieldErrors.position && <p className="text-red-500 text-xs mt-1">{addPlayerFieldErrors.position}</p>}
+              <input name="age" value={newPlayer.age} onChange={handleNewPlayerChange} placeholder="Age" type="number" min="0" className="w-full p-2 rounded bg-gray-800 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+              {addPlayerFieldErrors.age && <p className="text-red-500 text-xs mt-1">{addPlayerFieldErrors.age}</p>}
+              <input name="nationality" value={newPlayer.nationality} onChange={handleNewPlayerChange} placeholder="Nationality" className="w-full p-2 rounded bg-gray-800 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+              {addPlayerFieldErrors.nationality && <p className="text-red-500 text-xs mt-1">{addPlayerFieldErrors.nationality}</p>}
+              {addPlayerError && <p className="text-red-500 text-sm">{addPlayerError}</p>}
+            </div>
+            <div className="flex justify-end gap-4 mt-6 border-t border-gray-700 pt-4">
+              <button onClick={handleCloseAddPlayer} className="px-4 py-2 rounded bg-gray-600 cursor-pointer">Cancel</button>
+              <button onClick={handleAddPlayer} className="px-4 py-2 rounded bg-green-600 cursor-pointer" disabled={addingPlayer}>{addingPlayer ? 'Adding...' : 'Add Player'}</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

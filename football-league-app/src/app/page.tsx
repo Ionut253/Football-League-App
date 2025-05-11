@@ -17,6 +17,7 @@ export default function HomePage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [newTeam, setNewTeam] = useState({
     name: "",
+    abbreviation: "",
     coach_name: "",
     home_stadium: "",
     founded_year: "",
@@ -48,13 +49,9 @@ export default function HomePage() {
       if (!res.ok) throw new Error("Failed to fetch teams");
       const data = await res.json();
 
-      if (data.length === 0) {
-        setTeams([]);
-        setFilteredTeams([]);
-      } else {
-        setTeams(data);
-        setFilteredTeams(data);
-      }
+      // Directly use the API response which includes metadata and position
+      setTeams(data);
+      setFilteredTeams(data);
     } catch (err) {
       console.error(err);
       setError("Failed to load teams. Try again later.");
@@ -204,6 +201,7 @@ export default function HomePage() {
       setShowAddModal(false);
       setNewTeam({
         name: "",
+        abbreviation: "",
         coach_name: "",
         home_stadium: "",
         founded_year: "",
@@ -306,6 +304,17 @@ export default function HomePage() {
                   {formErrors.name && (
                     <p className="text-red-500 text-sm mt-1">{formErrors.name}</p>
                   )}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Abbreviation</label>
+                  <input
+                    type="text"
+                    value={newTeam.abbreviation}
+                    onChange={(e) => setNewTeam({ ...newTeam, abbreviation: e.target.value })}
+                    className="w-full p-2 rounded bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                    placeholder="e.g., PSG"
+                    maxLength={10}
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">Coach Name *</label>
@@ -491,8 +500,8 @@ const TeamTable = ({
     <table className="min-w-full bg-[#1d1d1d] text-white table-fixed rounded-lg overflow-hidden">
       <thead className="bg-gray-700">
         <tr>
-          <th className="py-2 px-4 w-8">#</th>
-          <th className="py-2 px-4 w-1/3">Team</th>
+          <th className="py-2 px-4 w-8 text-left">#</th>
+          <th className="py-2 px-4 w-1/3 text-left">Team</th>
           <th className="py-2 px-4 text-center w-16">Played</th>
           <th className="py-2 px-4 text-center w-16">Wins</th>
           <th className="py-2 px-4 text-center w-16">Draws</th>
@@ -504,13 +513,9 @@ const TeamTable = ({
       <tbody>
         {teams.map((team) => {
           const highlight =
-            team.metadata?.isMostWins
-              ? "bg-green-600"
-              : team.metadata?.isLeastWins
-              ? "bg-red-500"
-              : team.metadata?.isAvgWins
-              ? "bg-blue-700"
-              : "";
+            team.metadata?.isMostWins ? 'bg-green-600' :
+            team.metadata?.isLeastWins ? 'bg-red-500' :
+            team.metadata?.isAvgWins ? 'bg-blue-700' : '';
 
           return (
             <tr

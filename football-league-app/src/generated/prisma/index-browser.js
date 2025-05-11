@@ -134,6 +134,7 @@ exports.Prisma.PlayerScalarFieldEnum = {
 exports.Prisma.TeamScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  abbreviation: 'abbreviation',
   coach_name: 'coach_name',
   home_stadium: 'home_stadium',
   founded_year: 'founded_year',

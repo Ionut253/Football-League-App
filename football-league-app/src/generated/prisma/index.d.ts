@@ -2164,6 +2164,7 @@ export namespace Prisma {
   export type TeamMinAggregateOutputType = {
     id: number | null
     name: string | null
+    abbreviation: string | null
     coach_name: string | null
     home_stadium: string | null
     founded_year: number | null
@@ -2180,6 +2181,7 @@ export namespace Prisma {
   export type TeamMaxAggregateOutputType = {
     id: number | null
     name: string | null
+    abbreviation: string | null
     coach_name: string | null
     home_stadium: string | null
     founded_year: number | null
@@ -2196,6 +2198,7 @@ export namespace Prisma {
   export type TeamCountAggregateOutputType = {
     id: number
     name: number
+    abbreviation: number
     coach_name: number
     home_stadium: number
     founded_year: number
@@ -2234,6 +2237,7 @@ export namespace Prisma {
   export type TeamMinAggregateInputType = {
     id?: true
     name?: true
+    abbreviation?: true
     coach_name?: true
     home_stadium?: true
     founded_year?: true
@@ -2250,6 +2254,7 @@ export namespace Prisma {
   export type TeamMaxAggregateInputType = {
     id?: true
     name?: true
+    abbreviation?: true
     coach_name?: true
     home_stadium?: true
     founded_year?: true
@@ -2266,6 +2271,7 @@ export namespace Prisma {
   export type TeamCountAggregateInputType = {
     id?: true
     name?: true
+    abbreviation?: true
     coach_name?: true
     home_stadium?: true
     founded_year?: true
@@ -2369,6 +2375,7 @@ export namespace Prisma {
   export type TeamGroupByOutputType = {
     id: number
     name: string
+    abbreviation: string | null
     coach_name: string | null
     home_stadium: string | null
     founded_year: number | null
@@ -2404,6 +2411,7 @@ export namespace Prisma {
   export type TeamSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    abbreviation?: boolean
     coach_name?: boolean
     home_stadium?: boolean
     founded_year?: boolean
@@ -2422,6 +2430,7 @@ export namespace Prisma {
   export type TeamSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    abbreviation?: boolean
     coach_name?: boolean
     home_stadium?: boolean
     founded_year?: boolean
@@ -2438,6 +2447,7 @@ export namespace Prisma {
   export type TeamSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    abbreviation?: boolean
     coach_name?: boolean
     home_stadium?: boolean
     founded_year?: boolean
@@ -2454,6 +2464,7 @@ export namespace Prisma {
   export type TeamSelectScalar = {
     id?: boolean
     name?: boolean
+    abbreviation?: boolean
     coach_name?: boolean
     home_stadium?: boolean
     founded_year?: boolean
@@ -2467,7 +2478,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type TeamOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "coach_name" | "home_stadium" | "founded_year" | "wins" | "draws" | "losses" | "goals_scored" | "goals_conceded" | "country" | "createdAt" | "updatedAt", ExtArgs["result"]["team"]>
+  export type TeamOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "abbreviation" | "coach_name" | "home_stadium" | "founded_year" | "wins" | "draws" | "losses" | "goals_scored" | "goals_conceded" | "country" | "createdAt" | "updatedAt", ExtArgs["result"]["team"]>
   export type TeamInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     players?: boolean | Team$playersArgs<ExtArgs>
     _count?: boolean | TeamCountOutputTypeDefaultArgs<ExtArgs>
@@ -2483,6 +2494,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: number
       name: string
+      abbreviation: string | null
       coach_name: string | null
       home_stadium: string | null
       founded_year: number | null
@@ -2920,6 +2932,7 @@ export namespace Prisma {
   interface TeamFieldRefs {
     readonly id: FieldRef<"Team", 'Int'>
     readonly name: FieldRef<"Team", 'String'>
+    readonly abbreviation: FieldRef<"Team", 'String'>
     readonly coach_name: FieldRef<"Team", 'String'>
     readonly home_stadium: FieldRef<"Team", 'String'>
     readonly founded_year: FieldRef<"Team", 'Int'>
@@ -3392,6 +3405,7 @@ export namespace Prisma {
   export const TeamScalarFieldEnum: {
     id: 'id',
     name: 'name',
+    abbreviation: 'abbreviation',
     coach_name: 'coach_name',
     home_stadium: 'home_stadium',
     founded_year: 'founded_year',
@@ -3574,6 +3588,7 @@ export namespace Prisma {
     NOT?: TeamWhereInput | TeamWhereInput[]
     id?: IntFilter<"Team"> | number
     name?: StringFilter<"Team"> | string
+    abbreviation?: StringNullableFilter<"Team"> | string | null
     coach_name?: StringNullableFilter<"Team"> | string | null
     home_stadium?: StringNullableFilter<"Team"> | string | null
     founded_year?: IntNullableFilter<"Team"> | number | null
@@ -3591,6 +3606,7 @@ export namespace Prisma {
   export type TeamOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
+    abbreviation?: SortOrderInput | SortOrder
     coach_name?: SortOrderInput | SortOrder
     home_stadium?: SortOrderInput | SortOrder
     founded_year?: SortOrderInput | SortOrder
@@ -3611,6 +3627,7 @@ export namespace Prisma {
     AND?: TeamWhereInput | TeamWhereInput[]
     OR?: TeamWhereInput[]
     NOT?: TeamWhereInput | TeamWhereInput[]
+    abbreviation?: StringNullableFilter<"Team"> | string | null
     coach_name?: StringNullableFilter<"Team"> | string | null
     home_stadium?: StringNullableFilter<"Team"> | string | null
     founded_year?: IntNullableFilter<"Team"> | number | null
@@ -3628,6 +3645,7 @@ export namespace Prisma {
   export type TeamOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
+    abbreviation?: SortOrderInput | SortOrder
     coach_name?: SortOrderInput | SortOrder
     home_stadium?: SortOrderInput | SortOrder
     founded_year?: SortOrderInput | SortOrder
@@ -3652,6 +3670,7 @@ export namespace Prisma {
     NOT?: TeamScalarWhereWithAggregatesInput | TeamScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"Team"> | number
     name?: StringWithAggregatesFilter<"Team"> | string
+    abbreviation?: StringNullableWithAggregatesFilter<"Team"> | string | null
     coach_name?: StringNullableWithAggregatesFilter<"Team"> | string | null
     home_stadium?: StringNullableWithAggregatesFilter<"Team"> | string | null
     founded_year?: IntNullableWithAggregatesFilter<"Team"> | number | null
@@ -3740,6 +3759,7 @@ export namespace Prisma {
 
   export type TeamCreateInput = {
     name: string
+    abbreviation?: string | null
     coach_name?: string | null
     home_stadium?: string | null
     founded_year?: number | null
@@ -3757,6 +3777,7 @@ export namespace Prisma {
   export type TeamUncheckedCreateInput = {
     id?: number
     name: string
+    abbreviation?: string | null
     coach_name?: string | null
     home_stadium?: string | null
     founded_year?: number | null
@@ -3773,6 +3794,7 @@ export namespace Prisma {
 
   export type TeamUpdateInput = {
     name?: StringFieldUpdateOperationsInput | string
+    abbreviation?: NullableStringFieldUpdateOperationsInput | string | null
     coach_name?: NullableStringFieldUpdateOperationsInput | string | null
     home_stadium?: NullableStringFieldUpdateOperationsInput | string | null
     founded_year?: NullableIntFieldUpdateOperationsInput | number | null
@@ -3790,6 +3812,7 @@ export namespace Prisma {
   export type TeamUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
+    abbreviation?: NullableStringFieldUpdateOperationsInput | string | null
     coach_name?: NullableStringFieldUpdateOperationsInput | string | null
     home_stadium?: NullableStringFieldUpdateOperationsInput | string | null
     founded_year?: NullableIntFieldUpdateOperationsInput | number | null
@@ -3807,6 +3830,7 @@ export namespace Prisma {
   export type TeamCreateManyInput = {
     id?: number
     name: string
+    abbreviation?: string | null
     coach_name?: string | null
     home_stadium?: string | null
     founded_year?: number | null
@@ -3822,6 +3846,7 @@ export namespace Prisma {
 
   export type TeamUpdateManyMutationInput = {
     name?: StringFieldUpdateOperationsInput | string
+    abbreviation?: NullableStringFieldUpdateOperationsInput | string | null
     coach_name?: NullableStringFieldUpdateOperationsInput | string | null
     home_stadium?: NullableStringFieldUpdateOperationsInput | string | null
     founded_year?: NullableIntFieldUpdateOperationsInput | number | null
@@ -3838,6 +3863,7 @@ export namespace Prisma {
   export type TeamUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
+    abbreviation?: NullableStringFieldUpdateOperationsInput | string | null
     coach_name?: NullableStringFieldUpdateOperationsInput | string | null
     home_stadium?: NullableStringFieldUpdateOperationsInput | string | null
     founded_year?: NullableIntFieldUpdateOperationsInput | number | null
@@ -4064,6 +4090,7 @@ export namespace Prisma {
   export type TeamCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    abbreviation?: SortOrder
     coach_name?: SortOrder
     home_stadium?: SortOrder
     founded_year?: SortOrder
@@ -4090,6 +4117,7 @@ export namespace Prisma {
   export type TeamMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    abbreviation?: SortOrder
     coach_name?: SortOrder
     home_stadium?: SortOrder
     founded_year?: SortOrder
@@ -4106,6 +4134,7 @@ export namespace Prisma {
   export type TeamMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    abbreviation?: SortOrder
     coach_name?: SortOrder
     home_stadium?: SortOrder
     founded_year?: SortOrder
@@ -4378,6 +4407,7 @@ export namespace Prisma {
 
   export type TeamCreateWithoutPlayersInput = {
     name: string
+    abbreviation?: string | null
     coach_name?: string | null
     home_stadium?: string | null
     founded_year?: number | null
@@ -4394,6 +4424,7 @@ export namespace Prisma {
   export type TeamUncheckedCreateWithoutPlayersInput = {
     id?: number
     name: string
+    abbreviation?: string | null
     coach_name?: string | null
     home_stadium?: string | null
     founded_year?: number | null
@@ -4425,6 +4456,7 @@ export namespace Prisma {
 
   export type TeamUpdateWithoutPlayersInput = {
     name?: StringFieldUpdateOperationsInput | string
+    abbreviation?: NullableStringFieldUpdateOperationsInput | string | null
     coach_name?: NullableStringFieldUpdateOperationsInput | string | null
     home_stadium?: NullableStringFieldUpdateOperationsInput | string | null
     founded_year?: NullableIntFieldUpdateOperationsInput | number | null
@@ -4441,6 +4473,7 @@ export namespace Prisma {
   export type TeamUncheckedUpdateWithoutPlayersInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
+    abbreviation?: NullableStringFieldUpdateOperationsInput | string | null
     coach_name?: NullableStringFieldUpdateOperationsInput | string | null
     home_stadium?: NullableStringFieldUpdateOperationsInput | string | null
     founded_year?: NullableIntFieldUpdateOperationsInput | number | null
