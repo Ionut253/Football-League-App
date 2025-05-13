@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { TeamType } from "@/app/types/team";
+import { UserType } from "@/app/types/users";
 
 export default function HomePage() {
   const [teams, setTeams] = useState<TeamType[]>([]);
@@ -45,17 +46,29 @@ export default function HomePage() {
     setIsLoading(true);
     setError(null);
     try {
+      const userStr = localStorage.getItem('user');
+      if (!userStr) {
+        router.push('/');
+        return;
+      }
+
+      const user: UserType = JSON.parse(userStr);
+      if (!user.id) {
+        router.push('/');
+        return;
+      }
+
       const query = new URLSearchParams({
         ...(searchQuery && { name: searchQuery }),
         sortBy: sortCriteria,
         order: sortOrder,
+        userId: user.id.toString(),
       }).toString();
 
       const res = await fetch(`/api/teams?${query}`);
       if (!res.ok) throw new Error("Failed to fetch teams");
-      const data = await res.json();
+      const data: TeamType[] = await res.json();
 
-      // Directly use the API response which includes metadata and position
       setTeams(data);
       setFilteredTeams(data);
     } catch (err) {
@@ -111,11 +124,23 @@ export default function HomePage() {
 
     setIsLoading(true);
     try {
+      const userStr = localStorage.getItem('user');
+      if (!userStr) {
+        router.push('/');
+        return;
+      }
+
+      const user: UserType = JSON.parse(userStr);
+      if (!user.id) {
+        router.push('/');
+        return;
+      }
+
       await Promise.all(
         selectedTeams.map(async (teamName) => {
           const team = teams.find(t => t.name === teamName);
           if (team) {
-            const res = await fetch(`/api/teams/${team.id}`, { 
+            const res = await fetch(`/api/teams/${team.id}?userId=${user.id}`, { 
               method: "DELETE" 
             });
             if (!res.ok) throw new Error(`Failed to delete ${teamName}`);
@@ -183,6 +208,18 @@ export default function HomePage() {
 
     setIsLoading(true);
     try {
+      const userStr = localStorage.getItem('user');
+      if (!userStr) {
+        router.push('/');
+        return;
+      }
+
+      const user: UserType = JSON.parse(userStr);
+      if (!user.id) {
+        router.push('/');
+        return;
+      }
+
       const res = await fetch("/api/teams", {
         method: "POST",
         headers: {
@@ -196,6 +233,7 @@ export default function HomePage() {
           losses: parseInt(newTeam.losses),
           goals_scored: parseInt(newTeam.goals_scored),
           goals_conceded: parseInt(newTeam.goals_conceded),
+          userId: user.id,
         }),
       });
 

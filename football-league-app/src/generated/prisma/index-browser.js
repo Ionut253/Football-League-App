@@ -145,7 +145,8 @@ exports.Prisma.TeamScalarFieldEnum = {
   goals_conceded: 'goals_conceded',
   country: 'country',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  userId: 'userId'
 };
 
 exports.Prisma.UserScalarFieldEnum = {

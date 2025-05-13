@@ -11,6 +11,7 @@ export type TeamType = {
     goals_scored: number;
     goals_conceded: number;
     country: string;
+    userId: number;
 
     // Computed fields
     points: number;

@@ -24,6 +24,7 @@ async function generateFakeData() {
       goals_scored: faker.number.int({ min: 0, max: 200 }),
       goals_conceded: faker.number.int({ min: 0, max: 200 }),
       country: faker.helpers.arrayElement(countries),
+      userId: 1,
     };
     teams.push(team);
   }

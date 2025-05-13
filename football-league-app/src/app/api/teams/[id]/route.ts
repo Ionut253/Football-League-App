@@ -119,6 +119,8 @@ export async function DELETE(
 ) {
   const id = params.id;
   const teamId = parseInt(id);
+  const { searchParams } = new URL(req.url);
+  const userId = searchParams.get('userId');
 
   if (isNaN(teamId)) {
     return new Response(JSON.stringify({ message: "Invalid team ID" }), {
@@ -127,14 +129,24 @@ export async function DELETE(
     });
   }
 
+  if (!userId) {
+    return new Response(JSON.stringify({ message: "User ID is required" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   try {
-    // Check if team exists
-    const existingTeam = await prisma.team.findUnique({
-      where: { id: teamId },
+    // Check if team exists and belongs to the user
+    const existingTeam = await prisma.team.findFirst({
+      where: { 
+        id: teamId,
+        userId: parseInt(userId)
+      },
     });
 
     if (!existingTeam) {
-      return new Response(JSON.stringify({ message: "Team not found" }), {
+      return new Response(JSON.stringify({ message: "Team not found or you don't have permission to delete it" }), {
         status: 404,
         headers: { "Content-Type": "application/json" },
       });

@@ -8,10 +8,15 @@ export async function GET(req: Request) {
   const name = searchParams.get('name');
   const sortBy = searchParams.get('sortBy') || 'points';  
   const order = searchParams.get('order') || 'desc';       
+  const userId = searchParams.get('userId');
 
   try {
-    // Always fetch all teams (to calculate global ranking)
+    // Build the where clause with user ID if provided
+    const where = userId ? { userId: parseInt(userId) } : {};
+
+    // Fetch teams with user filter
     const teams = await prisma.team.findMany({
+      where,
       include: { players: true },
     });
 
@@ -110,8 +115,13 @@ export async function POST(req: Request) {
       draws = 0,
       losses = 0,
       goals_scored = 0,
-      goals_conceded = 0
+      goals_conceded = 0,
+      userId
     } = body;
+
+    if (!userId) {
+      return NextResponse.json({ message: "User ID is required" }, { status: 400 });
+    }
 
     if (abbreviation && abbreviation.length > 4) {
       return NextResponse.json({ message: "Abbreviation must be at most 4 characters long." }, { status: 400 });
@@ -125,9 +135,12 @@ export async function POST(req: Request) {
       );
     }
 
-    // Check if team with same name already exists
+    // Check if team with same name already exists for this user
     const existingTeam = await prisma.team.findFirst({
-      where: { name },
+      where: { 
+        name,
+        userId: parseInt(userId)
+      },
     });
 
     if (existingTeam) {
@@ -151,6 +164,7 @@ export async function POST(req: Request) {
         losses,
         goals_scored,
         goals_conceded,
+        userId: parseInt(userId),
       },
     });
 

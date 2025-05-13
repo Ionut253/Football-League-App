@@ -40,6 +40,8 @@ model Team {
   createdAt      DateTime? @default(now()) @db.Timestamp(6)
   updatedAt      DateTime? @default(now()) @db.Timestamp(6)
   players        Player[]
+  userId         Int
+  user           User      @relation(fields: [userId], references: [id])
 
   @@index([wins])
   @@index([goals_scored])
@@ -57,6 +59,7 @@ model User {
   email     String   @unique @db.VarChar(255)
   password  String   @db.VarChar(255)
   role      Role     @default(GUEST)
+  teams     Team[]
   createdAt DateTime @default(now()) @db.Timestamp(6)
   updatedAt DateTime @updatedAt @db.Timestamp(6)
 
