@@ -154,8 +154,19 @@ exports.Prisma.UserScalarFieldEnum = {
   email: 'email',
   password: 'password',
   role: 'role',
+  isMonitored: 'isMonitored',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.LogScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  action: 'action',
+  entity: 'entity',
+  entityId: 'entityId',
+  details: 'details',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -180,7 +191,8 @@ exports.Role = exports.$Enums.Role = {
 exports.Prisma.ModelName = {
   Player: 'Player',
   Team: 'Team',
-  User: 'User'
+  User: 'User',
+  Log: 'Log'
 };
 
 /**

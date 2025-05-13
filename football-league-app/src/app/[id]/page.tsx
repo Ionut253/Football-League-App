@@ -90,7 +90,19 @@ export default function TeamPage({ params }: { params: Promise<{ id: string }> }
     setSavingInfo(true);
     setError(null);
     try {
-      const res = await fetch(`/api/teams/${teamId}`, {
+      const userStr = localStorage.getItem('user');
+      if (!userStr) {
+        router.push('/');
+        return;
+      }
+
+      const user = JSON.parse(userStr);
+      if (!user.id) {
+        router.push('/');
+        return;
+      }
+
+      const res = await fetch(`/api/teams/${teamId}?userId=${user.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...infoData }),
@@ -129,7 +141,19 @@ export default function TeamPage({ params }: { params: Promise<{ id: string }> }
     setSavingStats(true);
     setError(null);
     try {
-      const res = await fetch(`/api/teams/${teamId}`, {
+      const userStr = localStorage.getItem('user');
+      if (!userStr) {
+        router.push('/');
+        return;
+      }
+
+      const user = JSON.parse(userStr);
+      if (!user.id) {
+        router.push('/');
+        return;
+      }
+
+      const res = await fetch(`/api/teams/${teamId}?userId=${user.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...statsData }),
@@ -168,6 +192,18 @@ export default function TeamPage({ params }: { params: Promise<{ id: string }> }
     setSavingPlayer(true);
     setError(null);
     try {
+      const userStr = localStorage.getItem('user');
+      if (!userStr) {
+        router.push('/');
+        return;
+      }
+
+      const user = JSON.parse(userStr);
+      if (!user.id) {
+        router.push('/');
+        return;
+      }
+
       if (!playerEditData.name?.trim() || !playerEditData.position?.trim() || !playerEditData.age?.toString().trim() || !playerEditData.nationality?.trim()) {
         setEditPlayerFieldErrors({
           name: !playerEditData.name?.trim() ? 'Name is required' : '',
@@ -185,7 +221,7 @@ export default function TeamPage({ params }: { params: Promise<{ id: string }> }
         setSavingPlayer(false);
         return;
       }
-      const res = await fetch(`/api/players/${editingPlayerId}`, {
+      const res = await fetch(`/api/players/${editingPlayerId}?userId=${user.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(playerEditData),
@@ -234,6 +270,18 @@ export default function TeamPage({ params }: { params: Promise<{ id: string }> }
     setAddingPlayer(true);
     setError(null);
     try {
+      const userStr = localStorage.getItem('user');
+      if (!userStr) {
+        router.push('/');
+        return;
+      }
+
+      const user = JSON.parse(userStr);
+      if (!user.id) {
+        router.push('/');
+        return;
+      }
+
       if (!newPlayer.name.trim() || !newPlayer.position.trim() || !newPlayer.age.trim() || !newPlayer.nationality.trim()) {
         setAddPlayerFieldErrors({
           name: !newPlayer.name.trim() ? 'Name is required' : '',
@@ -251,13 +299,14 @@ export default function TeamPage({ params }: { params: Promise<{ id: string }> }
         setAddingPlayer(false);
         return;
       }
-      const res = await fetch('/api/players', {
+      const res = await fetch(`/api/players?userId=${user.id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...newPlayer,
           age: newPlayer.age ? Number(newPlayer.age) : null,
           team_id: teamId,
+          userId: user.id
         }),
       });
       if (!res.ok) {
@@ -278,7 +327,19 @@ export default function TeamPage({ params }: { params: Promise<{ id: string }> }
   const handleDeletePlayer = async (playerId: number) => {
     if (!window.confirm('Are you sure you want to delete this player?')) return;
     try {
-      const res = await fetch(`/api/players/${playerId}`, { method: 'DELETE' });
+      const userStr = localStorage.getItem('user');
+      if (!userStr) {
+        router.push('/');
+        return;
+      }
+
+      const user = JSON.parse(userStr);
+      if (!user.id) {
+        router.push('/');
+        return;
+      }
+
+      const res = await fetch(`/api/players/${playerId}?userId=${user.id}`, { method: 'DELETE' });
       if (!res.ok) {
         const data = await res.json();
         throw new Error(data.message || 'Failed to delete player');

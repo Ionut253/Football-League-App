@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@/generated/prisma';
+import { logAction } from '@/lib/monitoring';
 
 const prisma = new PrismaClient();
 
@@ -93,7 +94,9 @@ export async function GET(req: Request) {
       }
       return 0;
     });
-
+    if (userId) {
+      await logAction(parseInt(userId), 'READ', 'Team');
+    }
     return NextResponse.json(sortedTeams);
   } catch (error) {
     console.error('Error fetching teams:', error);
@@ -168,6 +171,7 @@ export async function POST(req: Request) {
       },
     });
 
+    await logAction(parseInt(userId), 'CREATE', 'Team', newTeam.id, `Created team: ${name}`);
     return NextResponse.json(newTeam, { status: 201 });
   } catch (error) {
     console.error('Error creating team:', error);

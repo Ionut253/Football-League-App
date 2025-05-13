@@ -55,14 +55,31 @@ enum Role {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique @db.VarChar(255)
-  password  String   @db.VarChar(255)
-  role      Role     @default(GUEST)
-  teams     Team[]
-  createdAt DateTime @default(now()) @db.Timestamp(6)
-  updatedAt DateTime @updatedAt @db.Timestamp(6)
+  id          Int      @id @default(autoincrement())
+  email       String   @unique @db.VarChar(255)
+  password    String   @db.VarChar(255)
+  role        Role     @default(GUEST)
+  teams       Team[]
+  logs        Log[]
+  isMonitored Boolean  @default(false)
+  createdAt   DateTime @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime @updatedAt @db.Timestamp(6)
 
   @@index([email])
   @@index([role])
+}
+
+model Log {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  action    String
+  entity    String
+  entityId  Int?
+  details   String?
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
 }

@@ -1,56 +1,168 @@
+import { NextResponse } from 'next/server';
 import { PrismaClient } from '@/generated/prisma';
-import { NextRequest } from 'next/server';
+import { logAction } from '@/lib/monitoring';
 
 const prisma = new PrismaClient();
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
-  const playerId = parseInt(params.id);
-  if (isNaN(playerId)) {
-    return new Response(JSON.stringify({ message: 'Invalid player ID' }), { status: 400 });
-  }
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
-    const player = await prisma.player.findUnique({ where: { id: playerId } });
-    if (!player) {
-      return new Response(JSON.stringify({ message: 'Player not found' }), { status: 404 });
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get('userId');
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'User ID is required' },
+        { status: 400 }
+      );
     }
-    return new Response(JSON.stringify(player), { status: 200, headers: { 'Content-Type': 'application/json' } });
+
+    const playerId = parseInt(params.id);
+    const player = await prisma.player.findUnique({
+      where: { id: playerId },
+      include: { team: true },
+    });
+
+    if (!player) {
+      return NextResponse.json(
+        { error: 'Player not found' },
+        { status: 404 }
+      );
+    }
+
+    if (player.team.userId !== parseInt(userId)) {
+      return NextResponse.json(
+        { error: 'Unauthorized to view this player' },
+        { status: 403 }
+      );
+    }
+
+    // Log the read action
+    await logAction(parseInt(userId), 'READ', 'Player', playerId);
+
+    return NextResponse.json(player);
   } catch (error) {
-    console.error('GET /api/players/[id] error:', error);
-    return new Response(JSON.stringify({ message: 'Internal server error' }), { status: 500 });
+    console.error('Error fetching player:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  const playerId = parseInt(params.id);
-  if (isNaN(playerId)) {
-    return new Response(JSON.stringify({ message: 'Invalid player ID' }), { status: 400 });
-  }
+export async function PATCH(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
-    const body = await req.json();
-    const data: any = {};
-    if (body.name !== undefined) data.name = body.name;
-    if (body.position !== undefined) data.position = body.position;
-    if (body.age !== undefined) data.age = Number(body.age);
-    if (body.nationality !== undefined) data.nationality = body.nationality;
-    if (body.team_id !== undefined) data.team_id = Number(body.team_id);
-    const updatedPlayer = await prisma.player.update({ where: { id: playerId }, data });
-    return new Response(JSON.stringify(updatedPlayer), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get('userId');
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'User ID is required' },
+        { status: 400 }
+      );
+    }
+
+    const playerId = parseInt(params.id);
+    const player = await prisma.player.findUnique({
+      where: { id: playerId },
+      include: { team: true },
+    });
+
+    if (!player) {
+      return NextResponse.json(
+        { error: 'Player not found' },
+        { status: 404 }
+      );
+    }
+
+    if (player.team.userId !== parseInt(userId)) {
+      return NextResponse.json(
+        { error: 'Unauthorized to update this player' },
+        { status: 403 }
+      );
+    }
+
+    const body = await request.json();
+    const { name, position, age, nationality } = body;
+
+    // Create update data object with only provided fields
+    const updateData: any = {};
+    if (name !== undefined) updateData.name = name;
+    if (position !== undefined) updateData.position = position;
+    if (age !== undefined) updateData.age = Number(age);
+    if (nationality !== undefined) updateData.nationality = nationality;
+
+    const updatedPlayer = await prisma.player.update({
+      where: { id: playerId },
+      data: updateData,
+    });
+
+    // Log the update action
+    await logAction(parseInt(userId), 'UPDATE', 'Player', playerId, `Updated player: ${name || player.name}`);
+
+    return NextResponse.json(updatedPlayer);
   } catch (error) {
-    console.error('PATCH /api/players/[id] error:', error);
-    return new Response(JSON.stringify({ message: 'Internal server error' }), { status: 500 });
+    console.error('Error updating player:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
-  const playerId = parseInt(params.id);
-  if (isNaN(playerId)) {
-    return new Response(JSON.stringify({ message: 'Invalid player ID' }), { status: 400 });
-  }
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
-    await prisma.player.delete({ where: { id: playerId } });
-    return new Response(JSON.stringify({ message: 'Player deleted successfully' }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get('userId');
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'User ID is required' },
+        { status: 400 }
+      );
+    }
+
+    const playerId = parseInt(params.id);
+    const player = await prisma.player.findUnique({
+      where: { id: playerId },
+      include: { team: true },
+    });
+
+    if (!player) {
+      return NextResponse.json(
+        { error: 'Player not found' },
+        { status: 404 }
+      );
+    }
+
+    if (player.team.userId !== parseInt(userId)) {
+      return NextResponse.json(
+        { error: 'Unauthorized to delete this player' },
+        { status: 403 }
+      );
+    }
+
+    await prisma.player.delete({
+      where: { id: playerId },
+    });
+
+    // Log the delete action
+    await logAction(parseInt(userId), 'DELETE', 'Player', playerId, `Deleted player: ${player.name}`);
+
+    return NextResponse.json({ message: 'Player deleted successfully' });
   } catch (error) {
-    console.error('DELETE /api/players/[id] error:', error);
-    return new Response(JSON.stringify({ message: 'Internal server error' }), { status: 500 });
+    console.error('Error deleting player:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 } 
