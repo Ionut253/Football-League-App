@@ -46,3 +46,20 @@ model Team {
   @@index([country])
   @@index([abbreviation])
 }
+
+enum Role {
+  GUEST
+  ADMIN
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique @db.VarChar(255)
+  password  String   @db.VarChar(255)
+  role      Role     @default(GUEST)
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @updatedAt @db.Timestamp(6)
+
+  @@index([email])
+  @@index([role])
+}

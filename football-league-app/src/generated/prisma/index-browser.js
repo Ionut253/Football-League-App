@@ -148,6 +148,15 @@ exports.Prisma.TeamScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.UserScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  password: 'password',
+  role: 'role',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -162,11 +171,15 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
-
+exports.Role = exports.$Enums.Role = {
+  GUEST: 'GUEST',
+  ADMIN: 'ADMIN'
+};
 
 exports.Prisma.ModelName = {
   Player: 'Player',
-  Team: 'Team'
+  Team: 'Team',
+  User: 'User'
 };
 
 /**
