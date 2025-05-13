@@ -18,11 +18,16 @@ model Player {
   createdAt   DateTime? @default(now()) @db.Timestamp(6)
   updatedAt   DateTime? @default(now()) @db.Timestamp(6)
   team        Team      @relation(fields: [team_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([team_id])
+  @@index([position])
+  @@index([nationality])
 }
 
 model Team {
   id             Int       @id @default(autoincrement())
   name           String    @unique @db.VarChar(100)
+  abbreviation   String?   @db.VarChar(10)
   coach_name     String?   @db.VarChar(100)
   home_stadium   String?   @db.VarChar(100)
   founded_year   Int?
@@ -35,4 +40,9 @@ model Team {
   createdAt      DateTime? @default(now()) @db.Timestamp(6)
   updatedAt      DateTime? @default(now()) @db.Timestamp(6)
   players        Player[]
+
+  @@index([wins])
+  @@index([goals_scored])
+  @@index([country])
+  @@index([abbreviation])
 }
