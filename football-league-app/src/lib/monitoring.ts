@@ -35,21 +35,61 @@ export async function checkUserActivity() {
           createdAt: {
             gte: ONE_DAY_AGO,
           },
+          // Only include non-READ operations
+          action: {
+            in: ['CREATE', 'UPDATE', 'DELETE']
+          }
         },
       },
     },
   });
 
-  // Calculate thresholds (you can adjust these values)
-  const ACTION_THRESHOLD = 100; // Maximum actions per day
+  // Calculate thresholds
+  const ACTION_THRESHOLD = 50; // Maximum CREATE/UPDATE/DELETE actions per day
   const DELETE_THRESHOLD = 20;  // Maximum deletes per day
+  const CREATE_THRESHOLD = 30;  // Maximum creates per day
+  const UPDATE_THRESHOLD = 40;  // Maximum updates per day
+
+  console.log(`Checking activity for ${users.length} users...`);
 
   for (const user of users) {
-    const totalActions = user.logs.length;
+    const totalModifyActions = user.logs.length;
     const deleteActions = user.logs.filter(log => log.action === 'DELETE').length;
+    const createActions = user.logs.filter(log => log.action === 'CREATE').length;
+    const updateActions = user.logs.filter(log => log.action === 'UPDATE').length;
+
+    // Log the counts for debugging
+    if (totalModifyActions > 0) {
+      console.log(`User ${user.id}: ${totalModifyActions} modify actions, ${createActions} creates, ${updateActions} updates, ${deleteActions} deletes`);
+    }
 
     // Check if user exceeds thresholds
-    if (totalActions > ACTION_THRESHOLD || deleteActions > DELETE_THRESHOLD) {
+    let isSuspicious = false;
+    const suspiciousReasons = [];
+
+    if (totalModifyActions > ACTION_THRESHOLD) {
+      isSuspicious = true;
+      suspiciousReasons.push(`${totalModifyActions} total modify actions (threshold: ${ACTION_THRESHOLD})`);
+    }
+    
+    if (deleteActions > DELETE_THRESHOLD) {
+      isSuspicious = true;
+      suspiciousReasons.push(`${deleteActions} DELETE actions (threshold: ${DELETE_THRESHOLD})`);
+    }
+
+    if (createActions > CREATE_THRESHOLD) {
+      isSuspicious = true;
+      suspiciousReasons.push(`${createActions} CREATE actions (threshold: ${CREATE_THRESHOLD})`);
+    }
+
+    if (updateActions > UPDATE_THRESHOLD) {
+      isSuspicious = true;
+      suspiciousReasons.push(`${updateActions} UPDATE actions (threshold: ${UPDATE_THRESHOLD})`);
+    }
+
+    if (isSuspicious) {
+      console.log(`Marking user ${user.id} as monitored due to: ${suspiciousReasons.join(', ')}`);
+      
       await prisma.user.update({
         where: { id: user.id },
         data: { isMonitored: true },
@@ -72,6 +112,10 @@ export async function getMonitoredUsers() {
           createdAt: {
             gte: new Date(Date.now() - 24 * 60 * 60 * 1000),
           },
+          // Only include non-READ operations for monitoring
+          action: {
+            in: ['CREATE', 'UPDATE', 'DELETE']
+          }
         },
         orderBy: {
           createdAt: 'desc',

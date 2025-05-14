@@ -3,7 +3,6 @@ import { getMonitoredUsers } from '@/lib/monitoring';
 
 export async function GET(request: Request) {
   try {
-    // Get user from localStorage (you might want to use a more secure method)
     const userData = request.headers.get('user-data');
     if (!userData) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

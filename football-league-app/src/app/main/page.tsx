@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { TeamType } from "@/app/types/team";
 import { UserType } from "@/app/types/users";
+import Link from "next/link";
 
 export default function HomePage() {
   const [teams, setTeams] = useState<TeamType[]>([]);
@@ -308,12 +309,22 @@ export default function HomePage() {
               Remove Selected
             </button>
           </div>
-          <button
-            onClick={handleLogout}
-            className="bg-red-600 px-4 py-2 rounded cursor-pointer hover:bg-red-700 transition-colors"
-          >
-            Logout
-          </button>
+          <div className="flex gap-4 items-center">
+            <button
+              onClick={handleLogout}
+              className="bg-red-600 px-4 py-2 rounded cursor-pointer hover:bg-red-700 transition-colors"
+            >
+              Logout
+            </button>
+            {JSON.parse(localStorage.getItem('user') || '{}').role === 'ADMIN' && (
+              <Link
+                href="/admin/monitored-users"
+                className="bg-green-600 px-4 py-2 rounded cursor-pointer hover:bg-green-700 transition-colors ml-2"
+              >
+                See Monitored Users
+              </Link>
+            )}
+          </div>
         </div>
 
         <TeamTable
