@@ -4,9 +4,14 @@ import { logAction } from '@/lib/monitoring';
 
 const prisma = new PrismaClient();
 
+// Define a type for the dynamic params
+interface Params {
+  id: string;
+}
+
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Params }
 ) {
   try {
     const { searchParams } = new URL(request.url);
@@ -54,7 +59,7 @@ export async function GET(
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Params }
 ) {
   try {
     const { searchParams } = new URL(request.url);
@@ -117,7 +122,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Params }
 ) {
   try {
     const { searchParams } = new URL(request.url);
