@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: any
 ) {
   const id = params.id;
   console.log("Fetching team with ID:", id);
@@ -50,7 +50,7 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: any
 ) {
   const id = params.id;
   const teamId = parseInt(id);
@@ -138,7 +138,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: any
 ) {
   try {
     const { searchParams } = new URL(request.url);
