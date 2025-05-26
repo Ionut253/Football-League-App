@@ -11,7 +11,7 @@ interface Params {
 
 export async function GET(
   request: Request,
-  { params }: { params: Params }
+  context: { params: { id: string } }
 ) {
   try {
     const { searchParams } = new URL(request.url);
@@ -24,7 +24,7 @@ export async function GET(
       );
     }
 
-    const playerId = parseInt(params.id);
+    const playerId = parseInt(context.params.id);
     const player = await prisma.player.findUnique({
       where: { id: playerId },
       include: { team: true },
@@ -59,7 +59,7 @@ export async function GET(
 
 export async function PATCH(
   request: Request,
-  { params }: { params: Params }
+  context: { params: { id: string } }
 ) {
   try {
     const { searchParams } = new URL(request.url);
@@ -72,7 +72,7 @@ export async function PATCH(
       );
     }
 
-    const playerId = parseInt(params.id);
+    const playerId = parseInt(context.params.id);
     const player = await prisma.player.findUnique({
       where: { id: playerId },
       include: { team: true },
@@ -122,7 +122,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: Params }
+  context: { params: { id: string } }
 ) {
   try {
     const { searchParams } = new URL(request.url);
@@ -135,7 +135,7 @@ export async function DELETE(
       );
     }
 
-    const playerId = parseInt(params.id);
+    const playerId = parseInt(context.params.id);
     const player = await prisma.player.findUnique({
       where: { id: playerId },
       include: { team: true },
