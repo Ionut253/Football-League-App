@@ -4,14 +4,9 @@ import { logAction } from '@/lib/monitoring';
 
 const prisma = new PrismaClient();
 
-// Define a type for the dynamic params
-interface Params {
-  id: string;
-}
-
 export async function GET(
   request: Request,
-  context: { params: { id: string } }
+  { params }: any
 ) {
   try {
     const { searchParams } = new URL(request.url);
@@ -24,7 +19,7 @@ export async function GET(
       );
     }
 
-    const playerId = parseInt(context.params.id);
+    const playerId = parseInt(params.id);
     const player = await prisma.player.findUnique({
       where: { id: playerId },
       include: { team: true },
@@ -59,7 +54,7 @@ export async function GET(
 
 export async function PATCH(
   request: Request,
-  context: { params: { id: string } }
+  { params }: any
 ) {
   try {
     const { searchParams } = new URL(request.url);
@@ -72,7 +67,7 @@ export async function PATCH(
       );
     }
 
-    const playerId = parseInt(context.params.id);
+    const playerId = parseInt(params.id);
     const player = await prisma.player.findUnique({
       where: { id: playerId },
       include: { team: true },
@@ -122,7 +117,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  context: { params: { id: string } }
+  { params }: any
 ) {
   try {
     const { searchParams } = new URL(request.url);
@@ -135,7 +130,7 @@ export async function DELETE(
       );
     }
 
-    const playerId = parseInt(context.params.id);
+    const playerId = parseInt(params.id);
     const player = await prisma.player.findUnique({
       where: { id: playerId },
       include: { team: true },
