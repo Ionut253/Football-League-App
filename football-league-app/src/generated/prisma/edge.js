@@ -209,7 +209,7 @@ const config = {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": "postgresql://postgres:Riki01$$@localhost:5432/football_league"
+        "value": "postgresql://neondb_owner:npg_gX0oCVz6ZqhH@ep-lively-night-a9fbkz7k-pooler.gwc.azure.neon.tech/neondb?sslmode=require"
       }
     }
   },
