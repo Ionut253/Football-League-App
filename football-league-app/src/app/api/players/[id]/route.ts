@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 export async function GET(
   request: Request,
-  { params }: any
+  { params }: { params: { id: string } }
 ) {
   try {
     const { searchParams } = new URL(request.url);
@@ -115,9 +115,18 @@ export async function PATCH(
   }
 }
 
+interface UpdatePlayerData {
+  name?: string;
+  position?: string;
+  teamId?: string;
+  // Add other fields that can be updated
+}
+
+const updateData: UpdatePlayerData = {};
+
 export async function DELETE(
   request: Request,
-  { params }: any
+  { params }: { params: { id: string } }
 ) {
   try {
     const { searchParams } = new URL(request.url);

@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 export async function GET(
   req: NextRequest,
-  { params }: any
+  { params }: { params: { id: string } }
 ) {
   const id = params.id;
   console.log("Fetching team with ID:", id);
@@ -136,9 +136,18 @@ export async function PATCH(
   }
 }
 
+interface UpdateTeamData {
+  name?: string;
+  city?: string;
+  stadium?: string;
+  // Add other fields that can be updated
+}
+
+const updateData: UpdateTeamData = {};
+
 export async function DELETE(
   request: Request,
-  { params }: any
+  { params }: { params: { id: string } }
 ) {
   try {
     const { searchParams } = new URL(request.url);

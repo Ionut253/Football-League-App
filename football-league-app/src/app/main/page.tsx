@@ -89,11 +89,7 @@ export default function HomePage() {
   // Handle search/sort debounce
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
-      if (searchQuery || sortCriteria || sortOrder) {
-        fetchTeams(true);
-      } else {
-        fetchTeams(false);
-      }
+      fetchTeams(Boolean(searchQuery || sortCriteria || sortOrder));
     }, 300);
 
     return () => clearTimeout(delayDebounce);
@@ -101,7 +97,7 @@ export default function HomePage() {
 
   // Initial load
   useEffect(() => {
-    fetchTeams();
+    void fetchTeams();
   }, []);
 
   // Pagination
